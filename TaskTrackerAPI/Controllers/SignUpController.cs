@@ -54,7 +54,7 @@ namespace TaskTrackerAPI.Controllers
             return Ok(_mapper.Map<UserDto>(newUser));
         }
 
-        [HttpPut("userid")]
+        [HttpPut("{userid}")]
         public async Task<ActionResult> UpdateUser(int userId, UserForUpdateDto user)
         {
             if (!await _signUpRepository.UserExistAsync(userId))
@@ -71,7 +71,7 @@ namespace TaskTrackerAPI.Controllers
             await _signUpRepository.SaveChangesAsync();
             return NoContent();
         }
-
+        [HttpPatch()]
 
     }
 }
