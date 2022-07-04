@@ -8,6 +8,5 @@ namespace TaskTrackerData.Profiles
         {
             CreateMap<Domain.User, Common.Contract.Model.UserDto>();
         }
-
     }
 }

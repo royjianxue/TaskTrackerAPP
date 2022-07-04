@@ -1,11 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerData.DbConexts;
 using TaskTrackerData.Service;
+using Serilog;
+
+//configuring Serilog 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("log/TaskTracker.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Host.UseSerilog();
 
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -18,12 +28,10 @@ builder.Services.AddDbContext<TaskContext>(
                     LogLevel.Information)
                     .EnableSensitiveDataLogging());
 
-
 //AutoMapper.Extensions.Microsoft.DependencyInjection
 // AppDomain.CurrentDoman.GetAssemblies will scan the TaskTrackerAPI assembly
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
 builder.Services.AddScoped<ISignUpRepository, SignUpRepository>();
 
 
