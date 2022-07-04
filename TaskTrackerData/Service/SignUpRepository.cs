@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TaskTrackerData.DbConexts;
 using TaskTrackerData.Domain;
 
@@ -12,7 +13,16 @@ namespace TaskTrackerData.Service
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+        public async Task<User> GetUsersAsync(int userId)
+        {
+            var newUser = await _context.Users.Where(c => c.UserId == userId).FirstOrDefaultAsync();
 
+            if (newUser == null)
+            {
+                return null;
+            }
+            return newUser;
+        }
         public async Task<(IEnumerable<User>, PaginationMetadata)> GetUsersAsync(string? emailAddress,
                          string? searchQuery, int pageNumber, int pageSize)
         {

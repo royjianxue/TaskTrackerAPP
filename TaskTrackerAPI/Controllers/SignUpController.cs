@@ -26,7 +26,6 @@ namespace TaskTrackerAPI.Controllers
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(string? emailAddress, 
                                     string? searchQuery, int pageNumber = 1, int pageSize = 10)
         {
-
             try
             {
                 if (pageSize > maxCitiesPageSize)
@@ -54,6 +53,25 @@ namespace TaskTrackerAPI.Controllers
 
             return Ok(_mapper.Map<UserDto>(newUser));
         }
+
+        [HttpPut("userid")]
+        public async Task<ActionResult> UpdateUser(int userId, UserForUpdateDto user)
+        {
+            if (!await _signUpRepository.UserExistAsync(userId))
+            {
+                return NotFound();
+            }
+            var newUser = await _signUpRepository.GetUsersAsync(userId);
+            if (newUser == null)
+            {
+                return NotFound();
+            }
+            _mapper.Map(user, newUser);
+
+            await _signUpRepository.SaveChangesAsync();
+            return NoContent();
+        }
+
 
     }
 }
