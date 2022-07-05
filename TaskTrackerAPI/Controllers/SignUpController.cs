@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Common.Contract.Model;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using TaskTrackerData.Domain;
@@ -49,29 +49,70 @@ namespace TaskTrackerAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<UserDto>> SignUpUser(User user)
         {           
-            var newUser = await _signUpRepository.PostUserAsync(user);
+            var userDomain = await _signUpRepository.PostUserAsync(user);
 
-            return Ok(_mapper.Map<UserDto>(newUser));
+            return Ok(_mapper.Map<UserDto>(userDomain));
         }
 
-        [HttpPut("{userid}")]
+        [HttpPut("{userId}")]
         public async Task<ActionResult> UpdateUser(int userId, UserForUpdateDto user)
         {
             if (!await _signUpRepository.UserExistAsync(userId))
             {
                 return NotFound();
             }
-            var newUser = await _signUpRepository.GetUsersAsync(userId);
-            if (newUser == null)
+            var userDomain = await _signUpRepository.GetUsersAsync(userId);
+            if (userDomain == null)
             {
                 return NotFound();
             }
-            _mapper.Map(user, newUser);
+            _mapper.Map(user, userDomain);
 
             await _signUpRepository.SaveChangesAsync();
             return NoContent();
         }
-        [HttpPatch()]
+        [HttpPatch("{userId}")]
+
+        public async Task<ActionResult> PartialUpdateUserAccount(int userId,
+                            JsonPatchDocument<UserForUpdateDto> patchDocument)
+        {
+            if (!await _signUpRepository.UserExistAsync(userId))
+            {
+                return NotFound();
+            }
+
+            var oldUser = await _signUpRepository.GetUsersAsync(userId);
+            if (oldUser == null)
+            {
+                return NotFound();
+            }
+
+            var userToPatch = _mapper.Map<UserForUpdateDto>(oldUser);
+
+            patchDocument.ApplyTo(userToPatch, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            if (!TryValidateModel(patchDocument))
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(userToPatch, oldUser);
+
+            await _signUpRepository.SaveChangesAsync();
+            return NoContent();
+
+        }
+        public async Task<ActionResult> DeleteUser(int userId)
+        {
+            //find user and verify user
+
+            //delete user
+        }
+
 
     }
 }
