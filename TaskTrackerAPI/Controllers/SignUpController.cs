@@ -18,9 +18,9 @@ namespace TaskTrackerAPI.Controllers
         const int maxCitiesPageSize = 20;
         public SignUpController(ISignUpRepository signUpRepository, IMapper mapper, ILogger<SignUpController> logger)
         {
-            _signUpRepository = signUpRepository ?? throw new ArgumentNullException(nameof(signUpRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _signUpRepository = signUpRepository;
+            _mapper = mapper;
+            _logger = logger;
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(string? emailAddress, 
@@ -48,71 +48,97 @@ namespace TaskTrackerAPI.Controllers
         }
         [HttpPost]
         public async Task<ActionResult<UserDto>> SignUpUser(User user)
-        {           
-            var userDomain = await _signUpRepository.PostUserAsync(user);
+        {
+            try
+            {
+                var userDomain = await _signUpRepository.PostUserAsync(user);
 
-            return Ok(_mapper.Map<UserDto>(userDomain));
+                return Ok(_mapper.Map<UserDto>(userDomain));
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogCritical($"Exception while getting users information", ex);
+
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+
         }
 
         [HttpPut("{userId}")]
         public async Task<ActionResult> UpdateUser(int userId, UserForUpdateDto user)
         {
-            if (!await _signUpRepository.UserExistAsync(userId))
+            try
             {
-                return NotFound();
-            }
-            var userDomain = await _signUpRepository.GetUsersAsync(userId);
-            if (userDomain == null)
-            {
-                return NotFound();
-            }
-            _mapper.Map(user, userDomain);
+                if (!await _signUpRepository.UserExistAsync(userId))
+                {
+                    return NotFound();
+                }
+                var userDomain = await _signUpRepository.GetUsersAsync(userId);
+                if (userDomain == null)
+                {
+                    return NotFound();
+                }
+                _mapper.Map(user, userDomain);
 
-            await _signUpRepository.SaveChangesAsync();
-            return NoContent();
+                await _signUpRepository.SaveChangesAsync();
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"Exception while getting users information", ex);
+
+                return StatusCode(500, "A problem happened while handling your request.");
+
+            }
+            
         }
         [HttpPatch("{userId}")]
 
         public async Task<ActionResult> PartialUpdateUserAccount(int userId,
                             JsonPatchDocument<UserForUpdateDto> patchDocument)
         {
-            if (!await _signUpRepository.UserExistAsync(userId))
+            try
             {
-                return NotFound();
-            }
+                if (!await _signUpRepository.UserExistAsync(userId))
+                {
+                    return NotFound();
+                }
 
-            var oldUser = await _signUpRepository.GetUsersAsync(userId);
-            if (oldUser == null)
+                var oldUser = await _signUpRepository.GetUsersAsync(userId);
+                if (oldUser == null)
+                {
+                    return NotFound();
+                }
+
+                var userToPatch = _mapper.Map<UserForUpdateDto>(oldUser);
+
+                patchDocument.ApplyTo(userToPatch, ModelState);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                if (!TryValidateModel(patchDocument))
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _mapper.Map(userToPatch, oldUser);
+
+                await _signUpRepository.SaveChangesAsync();
+                return NoContent();
+
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+
+                _logger.LogCritical($"Exception while getting users information", ex);
+
+                return StatusCode(500, "A problem happened while handling your request.");
             }
-
-            var userToPatch = _mapper.Map<UserForUpdateDto>(oldUser);
-
-            patchDocument.ApplyTo(userToPatch, ModelState);
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (!TryValidateModel(patchDocument))
-            {
-                return BadRequest(ModelState);
-            }
-
-            _mapper.Map(userToPatch, oldUser);
-
-            await _signUpRepository.SaveChangesAsync();
-            return NoContent();
 
         }
-        public async Task<ActionResult> DeleteUser(int userId)
-        {
-            //find user and verify user
-
-            //delete user
-        }
-
-
     }
 }
