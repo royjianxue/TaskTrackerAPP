@@ -23,7 +23,7 @@ namespace TaskTrackerAPI.Controllers
             _logger = logger;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(string? emailAddress, 
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(string? emailAddress,
                                     string? searchQuery, int pageNumber = 1, int pageSize = 10)
         {
             try
@@ -46,14 +46,31 @@ namespace TaskTrackerAPI.Controllers
             }
 
         }
+        [HttpGet("{id}")]
+        [ActionName("GetUser")]
+
+        public async Task<ActionResult<UserDto>> GetUserById(int id)
+        {
+            if (!await _signUpRepository.UserExistAsync(id))
+            {
+                return NotFound();
+            }
+            var user = await _signUpRepository.GetUsersAsync(id);
+
+            return Ok(_mapper.Map<UserDto>(user));
+        }
+
+
         [HttpPost]
-        public async Task<ActionResult<UserDto>> SignUpUser(User user)
+        public async Task<ActionResult<UserDto>>SignUpUser(User user)
         {
             try
             {
                 var userDomain = await _signUpRepository.PostUserAsync(user);
-
-                return Ok(_mapper.Map<UserDto>(userDomain));
+                
+                return CreatedAtAction("GetUser", 
+                                    new {id = user.UserId}, 
+                                    _mapper.Map<UserDto>(userDomain));
             }
             catch (Exception ex)
             {
@@ -124,7 +141,6 @@ namespace TaskTrackerAPI.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
                 _mapper.Map(userToPatch, oldUser);
 
                 await _signUpRepository.SaveChangesAsync();
