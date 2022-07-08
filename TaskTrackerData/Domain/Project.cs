@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Common.Contract.Model;
 
 
 namespace TaskTrackerData.Domain
 {
-    public class Project
+    public class Project : DateTimeDto
     {
         public Project()
         {
@@ -17,9 +17,6 @@ namespace TaskTrackerData.Domain
 
         public string? Body { get; set; }
 
-        public DateTime CreatedOn { get; set; }
-
-        public DateTime UpdatedOn { get; set; }
         public List<Comment>? Comments { get; set; }
     }
 }

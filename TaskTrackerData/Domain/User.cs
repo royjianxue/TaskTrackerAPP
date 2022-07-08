@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Common.Contract.Model;
 
 namespace TaskTrackerData.Domain
 {
-    public class User
+    public class User : DateTimeDto
     {
         public User()
         {

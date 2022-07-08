@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Common.Contract.Model;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace TaskTrackerData.Domain
 {
-    public class Permission
+    public class Permission : DateTimeDto
     {
         public Permission()
         {
