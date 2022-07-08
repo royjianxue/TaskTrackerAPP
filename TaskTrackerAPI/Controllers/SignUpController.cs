@@ -92,6 +92,7 @@ namespace TaskTrackerAPI.Controllers
                     return NotFound();
                 }
                 var userDomain = await _signUpRepository.GetUsersAsync(userId);
+
                 if (userDomain == null)
                 {
                     return NotFound();
