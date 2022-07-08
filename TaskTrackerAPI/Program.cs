@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskTrackerData.DbConexts;
-using TaskTrackerData.Service;
 using Serilog;
+using TaskTrackerData.Service;
 
 //configuring Serilog 
 Log.Logger = new LoggerConfiguration()
