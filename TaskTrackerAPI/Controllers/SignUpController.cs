@@ -134,14 +134,11 @@ namespace TaskTrackerAPI.Controllers
 
                 patchDocument.ApplyTo(userToPatch, ModelState);
 
-                if (!ModelState.IsValid)
+                if (!ModelState.IsValid || !TryValidateModel(userToPatch))
                 {
                     return BadRequest(ModelState);
                 }
-                if (!TryValidateModel(patchDocument))
-                {
-                    return BadRequest(ModelState);
-                }
+                
                 _mapper.Map(userToPatch, oldUser);
 
                 await _signUpRepository.SaveChangesAsync();
