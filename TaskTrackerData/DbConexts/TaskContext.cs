@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Common.Contract.Model;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using TaskTrackerData.Domain;
+
 
 namespace TaskTrackerData.DbConexts
 {
@@ -23,8 +25,37 @@ namespace TaskTrackerData.DbConexts
 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
 
 
 
+        }
+
+        /// <inheritdoc/>
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            AddTimeStamps();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void AddTimeStamps()
+        {
+            var now = DateTime.Now;
+
+            var entries = ChangeTracker.Entries()
+                    .Where(e => e.Entity is DateTimeDto &&
+                            (e.State == EntityState.Added
+                             || e.State == EntityState.Modified));
+
+            foreach (var entityEntity in entries)
+            {
+                ((DateTimeDto)entityEntity.Entity).UpdatedDate = now;
+                if (entityEntity.State == EntityState.Added)
+                {
+                    ((DateTimeDto)entityEntity.Entity).CreatedDate = now;
+                }
+            }
+        }
     }
 }
