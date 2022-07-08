@@ -17,10 +17,6 @@ namespace TaskTrackerData.Service
         {
             var newUser = await _context.Users.Where(c => c.UserId == userId).FirstOrDefaultAsync();
 
-            if (newUser == null)
-            {
-                return null;
-            }
             return newUser;
         }
         public async Task<(IEnumerable<User>, PaginationMetadata)> GetUsersAsync(string? emailAddress,
@@ -40,7 +36,7 @@ namespace TaskTrackerData.Service
             {
                 searchQuery = searchQuery.Trim();
                 collection = collection.Where(a => a.EmailAddress.Contains(searchQuery)
-                          || (a.UserName != null && a.UserName.Contains(searchQuery)));
+                          || a.UserName != null && a.UserName.Contains(searchQuery));
             }
 
             var totalItemCount = await collection.CountAsync();
@@ -56,18 +52,7 @@ namespace TaskTrackerData.Service
 
         public async Task<User> PostUserAsync(User user)
         {
-            var newUser = await _context.Users.AddAsync(new User
-            {
-                UserId = user.UserId,
-                UserName = user.UserName,
-                FullName = user.FullName,
-                EmailAddress = user.EmailAddress,
-                Password = user.Password,
-                Comments = user.Comments,
-                Roles = user.Roles,
-                Projects = user.Projects
-            });
-            
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
         }
@@ -84,10 +69,8 @@ namespace TaskTrackerData.Service
         public async Task<bool> SaveChangesAsync()
         {
             // return true when one or more items have successfully been changed
-            return (await _context.SaveChangesAsync() >= 0);
+            return await _context.SaveChangesAsync() >= 0;
         }
-
-
 
     }
 }
