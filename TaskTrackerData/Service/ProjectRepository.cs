@@ -55,8 +55,15 @@ namespace TaskTrackerData.Service
             await _context.SaveChangesAsync();
             return project;
         }
-        
-        
+
+
+
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            // return true when one or more items have successfully been changed
+            return await _context.SaveChangesAsync() >= 0;
+        }
 
 
     }

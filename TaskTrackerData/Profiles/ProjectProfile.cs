@@ -7,7 +7,7 @@ namespace TaskTrackerData.Profiles
         public ProjectProfile()
         {
             CreateMap<Domain.Project, Common.Contract.Model.ProjectDto>();
-            //CreateMap<Common.Contract.Model.UserForUpdateDto, Domain.User>();
+            CreateMap<Common.Contract.Model.ProjectForUpdateDto, Domain.Project>();
             CreateMap<Domain.Project, Common.Contract.Model.ProjectDto>();
         }
     }

@@ -11,5 +11,7 @@ namespace TaskTrackerData.Service
         Task<Project> GetProjectByIdAsync(int projectId);
 
         Task<Project> PostProjectAsync(Project project);
+
+        Task<bool> SaveChangesAsync();
     }
 }
