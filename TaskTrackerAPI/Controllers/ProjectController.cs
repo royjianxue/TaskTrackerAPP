@@ -26,6 +26,7 @@ namespace TaskTrackerAPI.Controllers
         }
 
         [HttpGet("projectId")]
+        [ActionName("GetProject")]
         public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
         {
             if (!await _projectRepository.ProjectExistAsync(id))
@@ -38,9 +39,8 @@ namespace TaskTrackerAPI.Controllers
         }
 
         [HttpGet("status")]
-        public async Task<ActionResult<List<Project>>> GetProjectByStatus(bool status, int pageNumber = 1, int pageSize = 10)
+        public async Task<ActionResult<List<ProjectDto>>> GetProjectByStatus(bool status, int pageNumber = 1, int pageSize = 10)
         {
-
             try
             {
                 if (pageSize > maxProjectPageSize)
@@ -66,11 +66,24 @@ namespace TaskTrackerAPI.Controllers
 
         [HttpPost]
 
-        public async Task<ActionResult>
+        public async Task<ActionResult<ProjectDto>> PostProject(Project project)
+        {
+            try
+            {
+                
+                var projectDomain = await _projectRepository.PostProjectAsync(project);
 
+                return CreatedAtAction("GetProject", 
+                                    new { id = project.ProjectId }, 
+                                    _mapper.Map<ProjectDto>(projectDomain));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"Exception while getting users information", ex);
 
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
 
-
-
+        }
     }
 }
