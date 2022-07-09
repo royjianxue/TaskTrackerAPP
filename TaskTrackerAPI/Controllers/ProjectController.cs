@@ -65,7 +65,6 @@ namespace TaskTrackerAPI.Controllers
         }
 
         [HttpPost]
-
         public async Task<ActionResult<ProjectDto>> PostProject(Project project)
         {
             try
@@ -82,6 +81,41 @@ namespace TaskTrackerAPI.Controllers
                 _logger.LogCritical($"Exception while getting users information", ex);
 
                 return StatusCode(500, "A problem happened while handling your request.");
+            }
+
+        }
+
+        [HttpPut("{projectId}")]
+        public async Task<ActionResult> UpdateProject(int projectId, ProjectForUpdateDto projectForUpdate)
+        {
+            try
+            {
+                if (!await _projectRepository.ProjectExistAsync(projectId))
+                {
+                    return NotFound();
+
+                }
+
+                var projectDomain = await _projectRepository.GetProjectByIdAsync(projectId);
+
+                if (projectDomain == null)
+                {
+                    return NotFound();
+                }
+
+                _mapper.Map(projectForUpdate, projectDomain);
+
+                await _projectRepository.SaveChangesAsync();
+
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"Exception while getting users information", ex);
+
+                return StatusCode(500, "A problem happened while handling your request.");
+
             }
 
         }
