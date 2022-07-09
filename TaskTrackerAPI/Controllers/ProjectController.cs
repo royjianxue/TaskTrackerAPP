@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
+using Common.Contract.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using TaskTrackerData.Domain;
 using TaskTrackerData.Service;
 
 namespace TaskTrackerAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Project")]
     [ApiController]
     public class ProjectController : ControllerBase
     {
@@ -21,25 +23,51 @@ namespace TaskTrackerAPI.Controllers
             _projectRepository = projectRepository;
             _mapper = mapper;
             _logger = logger;
-
         }
 
-        
+        [HttpGet("projectId")]
+        public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
+        {
+            if (!await _projectRepository.ProjectExistAsync(id))
+            {
+                return NotFound();
+            }
+            var projects = await _projectRepository.GetProjectByIdAsync(id);
 
-        //public async Task<ActionResult<List<Project>>> GetProjectByStatus(bool status, string? searchQuery, int pageNumber = 1, int pageSize = 10)
-        //{
-        //    if (pageSize > maxProjectPageSize)
-        //    {
-        //        pageSize = maxProjectPageSize;
-        //    }
+            return Ok(_mapper.Map<ProjectDto>(projects));
+        }
 
+        [HttpGet("status")]
+        public async Task<ActionResult<List<Project>>> GetProjectByStatus(bool status, int pageNumber = 1, int pageSize = 10)
+        {
 
-        //    var (userDomain, paginationMetadata) = await _projectRepository.GetProjectByStatus(status, searchQuery, pageNumber, pageSize);
+            try
+            {
+                if (pageSize > maxProjectPageSize)
+                {
+                    pageSize = maxProjectPageSize;
+                }
 
+                var (projectDomain, paginationMetadata) = await _projectRepository.GetProjectByStatusAsync(status, pageNumber, pageSize);
 
+                Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
+                return Ok(_mapper.Map<IEnumerable<ProjectDto>>(projectDomain));
 
-        //}
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogCritical($"Exception while getting users information", ex);
+
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+        }
+
+        [HttpPost]
+
+        public async Task<ActionResult>
+
 
 
 

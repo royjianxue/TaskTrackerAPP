@@ -34,6 +34,7 @@ namespace TaskTrackerAPI.Controllers
                 }
 
                 var (userDomain, paginationMetadata) = await _signUpRepository.GetUsersAsync(emailAddress, searchQuery, pageNumber, pageSize);
+
                 Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
                 return Ok(_mapper.Map<IEnumerable<UserDto>>(userDomain));
@@ -55,7 +56,7 @@ namespace TaskTrackerAPI.Controllers
             {
                 return NotFound();
             }
-            var user = await _signUpRepository.GetUsersAsync(id);
+            var user = await _signUpRepository.GetUserByIdAsync(id);
 
             return Ok(_mapper.Map<UserDto>(user));
         }
@@ -91,7 +92,7 @@ namespace TaskTrackerAPI.Controllers
                 {
                     return NotFound();
                 }
-                var userDomain = await _signUpRepository.GetUsersAsync(userId);
+                var userDomain = await _signUpRepository.GetUserByIdAsync(userId);
 
                 if (userDomain == null)
                 {
@@ -124,7 +125,7 @@ namespace TaskTrackerAPI.Controllers
                     return NotFound();
                 }
 
-                var oldUser = await _signUpRepository.GetUsersAsync(userId);
+                var oldUser = await _signUpRepository.GetUserByIdAsync(userId);
                 if (oldUser == null)
                 {
                     return NotFound();
