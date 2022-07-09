@@ -1,7 +1,7 @@
 ﻿
 namespace Common.Contract.Model
 {
-    public class UserDto
+    public class UserDto : DateTimeDto
     {
         public int UserId { get; set; }
 

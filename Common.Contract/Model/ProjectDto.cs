@@ -2,7 +2,7 @@
 
 namespace Common.Contract.Model
 {
-    public class ProjectDto
+    public class ProjectDto : DateTimeDto
     {
 
         public int ProjectId { get; set; }

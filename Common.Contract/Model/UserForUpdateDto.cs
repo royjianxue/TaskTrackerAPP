@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Common.Contract.Model
 {
-    public class UserForUpdateDto
+    public class UserForUpdateDto : DateTimeDto
     {
 
         public string? UserName { get; set; }
