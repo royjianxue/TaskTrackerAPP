@@ -9,5 +9,7 @@ namespace TaskTrackerData.Service
         Task<bool> ProjectExistAsync(int projectId);
 
         Task<Project> GetProjectByIdAsync(int projectId);
+
+        Task<Project> PostProjectAsync(Project project);
     }
 }

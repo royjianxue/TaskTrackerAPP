@@ -1,5 +1,5 @@
 ﻿using Common.Contract.Model;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskTrackerData.Domain
 {
@@ -17,6 +17,7 @@ namespace TaskTrackerData.Domain
 
         public string? Body { get; set; }
 
+        public int UserId { get; set; }
         public List<Comment>? Comments { get; set; }
     }
 }

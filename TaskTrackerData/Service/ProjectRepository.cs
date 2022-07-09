@@ -8,6 +8,7 @@ namespace TaskTrackerData.Service
     public class ProjectRepository : IProjectRepository
     {
         private readonly TaskContext _context;
+
         public ProjectRepository(TaskContext context)
         {
             _context = context;
@@ -45,13 +46,17 @@ namespace TaskTrackerData.Service
             {
                 return false;
             }
-
             return await _context.Projects.AnyAsync(p => p.ProjectId == projectId);
         }
 
-
+        public async Task<Project>PostProjectAsync(Project project)
+        {
+            await _context.Projects.AddAsync(project);
+            await _context.SaveChangesAsync();
+            return project;
+        }
         
-
+        
 
 
     }

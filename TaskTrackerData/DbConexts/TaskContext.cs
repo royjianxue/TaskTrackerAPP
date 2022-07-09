@@ -8,7 +8,7 @@ namespace TaskTrackerData.DbConexts
 {
     public class TaskContext : DbContext
     {
-        public DbSet<Project>? Projects { get; set; }
+        public DbSet<Project> Projects { get; set; } = null!;
         public DbSet<Comment>? Comments { get; set; }
         public DbSet<Permission>? Permissions { get; set; }
         public DbSet<Role>? Roles { get; set; }
