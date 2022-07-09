@@ -4,6 +4,10 @@ namespace TaskTrackerData.Service
 {
     public interface IProjectRepository
     {
-        Task<(IEnumerable<Project>, PaginationMetadata)> GetProjectByStatus(bool status, string? searchQuery, int pageNumber, int pageSize);
+        Task<(IEnumerable<Project>, PaginationMetadata)> GetProjectByStatusAsync(bool status, int pageNumber, int pageSize);
+
+        Task<bool> ProjectExistAsync(int projectId);
+
+        Task<Project> GetProjectByIdAsync(int projectId);
     }
 }

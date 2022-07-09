@@ -13,29 +13,45 @@ namespace TaskTrackerData.Service
             _context = context;
         }
 
-        public async Task<(IEnumerable<Project>, PaginationMetadata)> GetProjectByStatus(bool status, string? searchQuery, int pageNumber, int pageSize)
+        public async Task<Project> GetProjectByIdAsync(int projectId)
         {
+            var newUser = await _context.Projects.Where(c => c.ProjectId == projectId).FirstOrDefaultAsync();
 
+            return newUser;
+
+        }
+        public async Task<(IEnumerable<Project>, PaginationMetadata)> GetProjectByStatusAsync(bool status, int pageNumber, int pageSize)
+        {
             var query = _context.Projects as IQueryable<Project>;
-
 
             query = query.Where(p => p.StatusCode == status);
 
-            if (!string.IsNullOrWhiteSpace(searchQuery))
-            {
-                query = query.Where(p => p.StatusCode == status && p.Title != null && p.Title.Contains(searchQuery));
-            }
-
             var totalItemCount = await query.CountAsync();
-            var pagination = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
+
+            var paginationMetaData = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
 
             var queryToReturn = await query.Where(p => p.StatusCode)
                               .Skip(pageSize * pageNumber - 1)
                               .Take(pageSize)
                               .ToListAsync();
 
-            return (queryToReturn, pagination);
+            return (queryToReturn, paginationMetaData);
         }
+
+
+        public async Task<bool> ProjectExistAsync(int projectId)
+        {
+            if (_context.Projects == null)
+            {
+                return false;
+            }
+
+            return await _context.Projects.AnyAsync(p => p.ProjectId == projectId);
+        }
+
+
+        
+
 
 
     }

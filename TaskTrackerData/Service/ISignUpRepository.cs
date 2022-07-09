@@ -8,6 +8,6 @@ namespace TaskTrackerData.Service
         Task<User> PostUserAsync(User user);
         Task<bool> SaveChangesAsync();
         Task<bool> UserExistAsync(int userId);
-        Task<User> GetUsersAsync(int userId);
+        Task<User> GetUserByIdAsync(int userId);
     }
 }

@@ -13,7 +13,7 @@ namespace TaskTrackerData.Service
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public async Task<User> GetUsersAsync(int userId)
+        public async Task<User> GetUserByIdAsync(int userId)
         {
             var newUser = await _context.Users.Where(c => c.UserId == userId).FirstOrDefaultAsync();
 
