@@ -1,6 +1,4 @@
 ﻿using Common.Contract.Model;
-using System.ComponentModel.DataAnnotations;
-
 
 namespace TaskTrackerData.Domain
 {
