@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Common.Contract.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using TaskTrackerData.Domain;
@@ -27,13 +28,15 @@ namespace TaskTrackerAPI.Controllers
 
         [HttpGet("projectId")]
         [ActionName("GetProject")]
-        public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
+        public async Task<ActionResult<ProjectDto>> GetProjectById(int projectId)
         {
-            if (!await _projectRepository.ProjectExistAsync(id))
+        
+            var projects = await _projectRepository.GetProjectByIdAsync(projectId);
+
+            if (projects == null)
             {
                 return NotFound();
             }
-            var projects = await _projectRepository.GetProjectByIdAsync(id);
 
             return Ok(_mapper.Map<ProjectDto>(projects));
         }
@@ -90,12 +93,6 @@ namespace TaskTrackerAPI.Controllers
         {
             try
             {
-                if (!await _projectRepository.ProjectExistAsync(projectId))
-                {
-                    return NotFound();
-
-                }
-
                 var projectDomain = await _projectRepository.GetProjectByIdAsync(projectId);
 
                 if (projectDomain == null)
@@ -119,5 +116,61 @@ namespace TaskTrackerAPI.Controllers
             }
 
         }
+
+        [HttpPatch("{projectId}")]
+        public async Task<ActionResult> PartialUpdateProject(int projectId,
+                       JsonPatchDocument<ProjectForUpdateDto> patchDocument)
+        {
+            try
+            {
+                var oldProject = await _projectRepository.GetProjectByIdAsync(projectId);
+
+                if (oldProject == null)
+                {
+                    return NotFound();
+                }
+                var projectToPatch = _mapper.Map<ProjectForUpdateDto>(oldProject);
+
+                patchDocument.ApplyTo(projectToPatch, ModelState);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                if (!TryValidateModel(patchDocument))
+                {
+                    return BadRequest(ModelState);
+                }
+                _mapper.Map(projectToPatch, oldProject);
+                await _projectRepository.SaveChangesAsync();
+                return NotFound();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"Exception while getting users information", ex);
+
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+        }
+
+
+        [HttpDelete("projectId")]
+
+        public async Task<ActionResult> DeleteProjectById(int projectId)
+        {
+            var project = await _projectRepository.GetProjectByIdAsync(projectId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            await _projectRepository.DeleteProjectAsync(projectId);                
+            return NoContent();
+
+        }
+
+
+
     }
 }

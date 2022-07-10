@@ -57,15 +57,6 @@ namespace TaskTrackerData.Service
             return user;
         }
 
-        public async Task<bool> UserExistAsync(int userId)
-        {
-            if (_context.Users == null)
-            {
-                return false;
-            }
-            return await _context.Users.AnyAsync(a => a.UserId == userId);
-        }
-
         public async Task<bool> SaveChangesAsync()
         {
             // return true when one or more items have successfully been changed

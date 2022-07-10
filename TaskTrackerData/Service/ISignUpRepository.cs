@@ -7,7 +7,6 @@ namespace TaskTrackerData.Service
         Task<(IEnumerable<User>, PaginationMetadata)> GetUsersAsync(string? emailAddress, string? searchQuery, int pageNumber, int pageSize);
         Task<User> PostUserAsync(User user);
         Task<bool> SaveChangesAsync();
-        Task<bool> UserExistAsync(int userId);
         Task<User> GetUserByIdAsync(int userId);
     }
 }

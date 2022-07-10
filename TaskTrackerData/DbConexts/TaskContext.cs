@@ -18,27 +18,20 @@ namespace TaskTrackerData.DbConexts
         {
             // override constructor on program.cs
         }
-
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-
-
         }
-
         /// <inheritdoc/>
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             AddTimeStamps();
             return base.SaveChangesAsync(cancellationToken);
         }
-
         private void AddTimeStamps()
         {
             var now = DateTime.Now;

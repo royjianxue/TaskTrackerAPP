@@ -52,11 +52,12 @@ namespace TaskTrackerAPI.Controllers
 
         public async Task<ActionResult<UserDto>> GetUserById(int id)
         {
-            if (!await _signUpRepository.UserExistAsync(id))
+            var user = await _signUpRepository.GetUserByIdAsync(id);
+
+            if (user == null)
             {
                 return NotFound();
             }
-            var user = await _signUpRepository.GetUserByIdAsync(id);
 
             return Ok(_mapper.Map<UserDto>(user));
         }
@@ -88,11 +89,12 @@ namespace TaskTrackerAPI.Controllers
         {
             try
             {
-                if (!await _signUpRepository.UserExistAsync(userId))
+
+                var userDomain = await _signUpRepository.GetUserByIdAsync(userId);
+                if (userDomain == null)
                 {
                     return NotFound();
                 }
-                var userDomain = await _signUpRepository.GetUserByIdAsync(userId);
 
                 if (userDomain == null)
                 {
@@ -120,19 +122,15 @@ namespace TaskTrackerAPI.Controllers
         {
             try
             {
-                if (!await _signUpRepository.UserExistAsync(userId))
-                {
-                    return NotFound();
-                }
-
                 var oldUser = await _signUpRepository.GetUserByIdAsync(userId);
+
                 if (oldUser == null)
                 {
                     return NotFound();
                 }
 
                 var userToPatch = _mapper.Map<UserForUpdateDto>(oldUser);
-
+                
                 patchDocument.ApplyTo(userToPatch, ModelState);
 
                 if (!ModelState.IsValid)
@@ -146,6 +144,7 @@ namespace TaskTrackerAPI.Controllers
                 _mapper.Map(userToPatch, oldUser);
 
                 await _signUpRepository.SaveChangesAsync();
+
                 return NoContent();
 
             }
