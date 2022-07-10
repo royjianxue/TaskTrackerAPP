@@ -30,18 +30,16 @@ namespace TaskTrackerAPI.Controllers
         [ActionName("GetProject")]
         public async Task<ActionResult<ProjectDto>> GetProjectById(int projectId)
         {
-        
-            var projects = await _projectRepository.GetProjectByIdAsync(projectId);
-
-            if (projects == null)
+            if (!await _projectRepository.ProjectExistAsync(projectId))
             {
                 return NotFound();
             }
+            var projects = await _projectRepository.GetProjectByIdAsync(projectId);
 
             return Ok(_mapper.Map<ProjectDto>(projects));
         }
 
-        [HttpGet("status")]
+        [HttpGet]
         public async Task<ActionResult<List<ProjectDto>>> GetProjectByStatus(bool status, int pageNumber = 1, int pageSize = 10)
         {
             try
@@ -93,6 +91,11 @@ namespace TaskTrackerAPI.Controllers
         {
             try
             {
+                if (!await _projectRepository.ProjectExistAsync(projectId))
+                {
+                    return NotFound();
+
+                }
                 var projectDomain = await _projectRepository.GetProjectByIdAsync(projectId);
 
                 if (projectDomain == null)
@@ -123,6 +126,10 @@ namespace TaskTrackerAPI.Controllers
         {
             try
             {
+                if (!await _projectRepository.ProjectExistAsync(projectId))
+                {
+                    return NotFound();
+                }
                 var oldProject = await _projectRepository.GetProjectByIdAsync(projectId);
 
                 if (oldProject == null)
@@ -159,18 +166,13 @@ namespace TaskTrackerAPI.Controllers
 
         public async Task<ActionResult> DeleteProjectById(int projectId)
         {
-            var project = await _projectRepository.GetProjectByIdAsync(projectId);
-            if (project == null)
+            if (!await _projectRepository.ProjectExistAsync(projectId))
             {
                 return NotFound();
             }
-
-            await _projectRepository.DeleteProjectAsync(projectId);                
+            await _projectRepository.DeleteProjectAsync(projectId);
             return NoContent();
-
         }
-
-
 
     }
 }
