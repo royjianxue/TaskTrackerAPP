@@ -38,6 +38,9 @@ builder.Services.AddDbContext<TaskContext>(
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ISignUpRepository, SignUpRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+
+
 
 var app = builder.Build();
 
