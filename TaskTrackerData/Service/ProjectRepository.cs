@@ -20,9 +20,8 @@ namespace TaskTrackerData.Service
             var project = await _context.Projects.Where(c => c.ProjectId == projectId).FirstOrDefaultAsync();
 
             return project;
-
         }
-        public async Task<(IEnumerable<Project>, PaginationMetadata)> GetProjectByStatusAsync(bool status, int pageNumber, int pageSize)
+        public async Task<(IEnumerable<Project>, PaginationMetadata)> GetProjectByStatusAsync(bool? status, int pageNumber, int pageSize)
         {
             var query = _context.Projects as IQueryable<Project>;
 
@@ -32,12 +31,21 @@ namespace TaskTrackerData.Service
 
             var paginationMetaData = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
 
-            var queryToReturn = await query.Where(p => p.StatusCode)
-                              .Skip(pageSize * pageNumber - 1)
+            var queryToReturn = await query.OrderBy(p => p.StatusCode)
+                              .Skip(pageSize * (pageNumber - 1))
                               .Take(pageSize)
                               .ToListAsync();
 
             return (queryToReturn, paginationMetaData);
+        }
+
+        public async Task<bool> ProjectExistAsync(int projectId)
+        {
+            if (_context.Projects == null)
+            {
+                return false;
+            }
+            return await _context.Projects.AnyAsync(p => p.ProjectId == projectId);
         }
 
         public async Task<Project>PostProjectAsync(Project project)
@@ -67,6 +75,5 @@ namespace TaskTrackerData.Service
             }
             return result;
         }
-
     }
 }
