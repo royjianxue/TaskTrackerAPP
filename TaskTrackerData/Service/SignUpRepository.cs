@@ -15,9 +15,10 @@ namespace TaskTrackerData.Service
         }
         public async Task<User> GetUserByIdAsync(int userId)
         {
+  
             var newUser = await _context.Users.Where(c => c.UserId == userId).FirstOrDefaultAsync();
-
             return newUser;
+
         }
         public async Task<(IEnumerable<User>, PaginationMetadata)> GetUsersAsync(string? emailAddress,
                          string? searchQuery, int pageNumber, int pageSize)

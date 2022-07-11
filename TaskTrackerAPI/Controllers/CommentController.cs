@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Common.Contract.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using TaskTrackerData.Domain;
@@ -111,7 +110,6 @@ namespace TaskTrackerAPI.Controllers
 
                 return StatusCode(500, "A problem happened while handling your request.");
             }
-
         }
 
         [HttpDelete("{commentId}")]

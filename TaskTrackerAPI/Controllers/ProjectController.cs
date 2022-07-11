@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Common.Contract.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
