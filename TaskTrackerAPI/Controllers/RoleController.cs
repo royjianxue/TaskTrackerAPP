@@ -24,6 +24,7 @@ namespace TaskTrackerAPI.Controllers
             _logger = logger;
         }
         [HttpGet("{roleId}")]
+        [ActionName("GetRole")]
         public async Task<ActionResult<RoleDto>> GetRoleById(int roleId)
         {
             if (!await _roleRepository.RoleExistAsync(roleId))
@@ -46,7 +47,7 @@ namespace TaskTrackerAPI.Controllers
 
                 var roleDomain = await _roleRepository.PostRolesAsync(role);
 
-                return Created("~/api/role/",
+                return CreatedAtAction("GetRole", new {roleId = role.RoleId},
                                     _mapper.Map<RoleDto>(roleDomain));
             }
             catch (Exception ex)

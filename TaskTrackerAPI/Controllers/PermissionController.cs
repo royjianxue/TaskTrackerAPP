@@ -26,6 +26,7 @@ namespace TaskTrackerAPI.Controllers
         }
 
         [HttpGet("{permissionId}")]
+        [ActionName("GetPermission")]
         public async Task<ActionResult<PermissionDto>> GetPermissionById(int permissionId)
         {
             if (!await _permissionRepository.PermissionExistAsync(permissionId))
@@ -48,7 +49,7 @@ namespace TaskTrackerAPI.Controllers
 
                 var permissionDomain = await _permissionRepository.PostPermissionAsync(permission);
 
-                return Created("~/api/permission/",
+                return CreatedAtAction("GetPermission", new {permissionId = permission.PermissionId},
                                     _mapper.Map<PermissionDto>(permissionDomain));
             }
             catch (Exception ex)

@@ -25,7 +25,7 @@ namespace TaskTrackerAPI.Controllers
         }
 
         [HttpGet("{commentId}")]
-        
+        [ActionName("GetComment")]
         public async Task<ActionResult<CommentDto>> GetCommentById(int commentId)
         {
             var comments = await _commentRepository.GetCommentsByIdAsync(commentId);
@@ -72,7 +72,8 @@ namespace TaskTrackerAPI.Controllers
 
                 await _commentRepository.SaveChangesAsync();
 
-                return Created("~/api/Comment/",_mapper.Map<CommentDto>(commentDomain));
+                return CreatedAtAction("GetComment",new { commentId = comment.commentId},
+                                        _mapper.Map<CommentDto>(commentDomain));
 
             }
             catch (Exception ex)

@@ -73,7 +73,7 @@ namespace TaskTrackerAPI.Controllers
                 var projectDomain = await _projectRepository.PostProjectAsync(project);
 
                 return CreatedAtAction("GetProject", 
-                                    new { id = project.ProjectId }, 
+                                    new { projectId = project.ProjectId }, 
                                     _mapper.Map<ProjectDto>(projectDomain));
             }
             catch (Exception ex)
